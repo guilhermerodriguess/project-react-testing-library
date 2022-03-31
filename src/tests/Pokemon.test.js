@@ -4,7 +4,6 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
-import pokemons from '../data';
 
 const renderWithRouter = (component) => {
   const history = createMemoryHistory();
@@ -17,33 +16,18 @@ describe('Teste o componente <Pokemon.js />', () => {
   test('Teste se é renderizado um card com informações de determinado pokémon.', () => {
     renderWithRouter(<App />);
 
-    pokemons.forEach((pokemon) => {
-      const { averageWeight, id, image, name, type } = pokemon;
-      const { measurementUnit, value } = averageWeight;
-      const showNamePokemon = screen.getByText(name);
-      // O nome correto do Pokémon deve ser mostrado na tela;
-      expect(showNamePokemon).toBeInTheDocument();
+    const pokemonName = screen.getByText(/pikachu/i);
+    // O nome correto do Pokémon deve ser mostrado na tela;
+    expect(pokemonName).toBeInTheDocument();
 
-      const showTypePokemon = screen.getByTestId('pokemon-type', { name: type });
-      // O tipo correto do pokémon deve ser mostrado na tela.
-      expect(showTypePokemon).toBeInTheDocument();
+    const pokemonType = screen.getByTestId('pokemon-type');
+    // O tipo correto do pokémon deve ser mostrado na tela.
+    expect(pokemonType).toHaveTextContent(/electric/i);
 
-      const showWeightPokemon = screen
-        .getByText(`Average weight: ${value} ${measurementUnit}`);
-      // O peso médio do pokémon deve ser exibido com um texto no formato Average weight: <value> <measurementUnit>; onde <value> e <measurementUnit> são, respectivamente, o peso médio do pokémon e sua unidade de medida.
-      expect(showWeightPokemon).toBeInTheDocument();
-
-      const showImagePokemon = screen.getByRole('img', { src: image });
-      // A imagem do Pokémon deve ser exibida. Ela deve conter um atributo src com a URL da imagem e um atributo alt com o texto <name> sprite, onde <name> é o nome do pokémon;
-      expect(showImagePokemon.src).toBe(image);
-      expect(showImagePokemon.alt).toBe(`${name} sprite`);
-
-      const details = screen.getByRole('link', { name: /More Details/i });
-      expect(details.href).toBe(`http://localhost/pokemons/${id}`);
-
-      const nextPokemon = screen.getByRole('button', { name: /Próximo Pokémon/i });
-      userEvent.click(nextPokemon);
-    });
+    // A imagem do Pokémon deve ser exibida. Ela deve conter um atributo src com a URL da imagem e um atributo alt com o texto <name> sprite, onde <name> é o nome do pokémon;
+    const pokemonImg = screen.getByRole('img', { name: /pikachu sprite/i });
+    expect(pokemonImg.src).toBe('https://cdn2.bulbagarden.net/upload/b/b2/Spr_5b_025_m.png');
+    expect(pokemonImg).toBeInTheDocument();
   });
 
   test('Teste se existe um ícone de estrela nos Pokémons favoritados.', () => {
